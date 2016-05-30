@@ -1,4 +1,9 @@
-TIP:这个是从https://github.com/EdenHell/FrostPlay 克隆的分支，加了点自己的功能
+TIP:这个是从https://github.com/EdenHell/FrostPlay 克隆的分支
+分支特性：
+1.最小化到托盘的功能 50% ---后续将美化右键菜单
+2.MINI窗口           0%  ---还未开始制作
+3.全局快捷键         0%  ---还未开始制作
+4.待续...
 
 # ![Alt text](overview/Icon.png "FrostPlay") FrostPlay
 
