@@ -1,4 +1,5 @@
 TIP:这个是从https://github.com/EdenHell/FrostPlay 克隆的分支
+
 分支特性：
 
 1.最小化到托盘的功能 50% ---后续将美化右键菜单
