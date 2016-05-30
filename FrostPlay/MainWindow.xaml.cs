@@ -34,6 +34,7 @@ namespace FrostPlay
         Uri playListFileUri { get; set; } = new Uri(new FileInfo("playlist.playlist").FullName);
         Music nowPlayingMusic { get; set; } = null;
         string displayStringFormat { get; set; } = "%num%.%artist%-%title%";
+
         private NotifyIcon notifyIcon = null;
 
 
