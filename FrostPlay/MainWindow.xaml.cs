@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Threading;
 using System.Windows.Forms; // NotifyIcon control
 using System.Drawing; // Icon
+using System.Windows.Interop;
+using System.Runtime.InteropServices;
 
 namespace FrostPlay
 {
@@ -34,10 +36,11 @@ namespace FrostPlay
         Uri playListFileUri { get; set; } = new Uri(new FileInfo("playlist.playlist").FullName);
         Music nowPlayingMusic { get; set; } = null;
         string displayStringFormat { get; set; } = "%num%.%artist%-%title%";
-
+        //最小化到托盘
         private NotifyIcon notifyIcon = null;
-
-
+        //全局热键
+        private HotKeys hotkey = new HotKeys();
+        private IntPtr hwnd;
         public MainWindow()
         {
             InitializeComponent();
@@ -49,20 +52,84 @@ namespace FrostPlay
             readPlayList();
             readSettings();
             DataContext = this;
+            
         }
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            hwnd = new WindowInteropHelper(this).Handle;
+            HwndSource source = PresentationSource.FromVisual(this) as HwndSource;
+            source.AddHook(WndProc);
+            InitHotKey();
+        }
+        //热键功能
+        #region
+        private void InitHotKey()
+        {
+            hotkey.Regist(hwnd, (int)HotKeys.HotkeyModifiers.Control + (int)HotKeys.HotkeyModifiers.Alt, Keys.Left, Hotkey_LastSongs);
+            hotkey.Regist(hwnd, (int)HotKeys.HotkeyModifiers.Control + (int)HotKeys.HotkeyModifiers.Alt, Keys.Right, Hotkey_NextSongs);
+            hotkey.Regist(hwnd, (int)HotKeys.HotkeyModifiers.Control + (int)HotKeys.HotkeyModifiers.Alt, Keys.Down, Hotkey_PlayOrPause);
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            //窗口消息处理函数
+            if (msg == 0x0312)
+            {
+                hotkey.ProcessHotKey(msg, wParam);
+            }
+            return IntPtr.Zero;
+        }
+
+        private void Hotkey_PlayOrPause()
+        {
+            if ((string)playBtn.Content == "▶")
+            {
+                play();
+            }
+            else
+            {
+                pause();
+            }
+        }
+
+        private void Hotkey_NextSongs()
+        {
+            if (playOrder != PlayOrder.loop)
+            {
+                playNextSong(playOrder);
+            }
+            else
+            {
+                playNextSong(PlayOrder.order);
+            }
+        }
+
+        private void Hotkey_LastSongs()
+        {
+            if (playOrder != PlayOrder.random)
+            {
+                playNextSong(PlayOrder.reverseOrder);
+            }
+            else
+            {
+                playNextSong(PlayOrder.random);
+            }
+        }
+
+        #endregion
 
         private void Mini2notify()
         {
             //隐藏主窗体
             this.Visibility = Visibility.Hidden;
-
             //设置托盘的各个属性
             notifyIcon = new NotifyIcon();
             notifyIcon.BalloonTipText = "FrosePlay托盘运行ing";
             notifyIcon.Text = "FrosePlay";
             notifyIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath); ;
             notifyIcon.Visible = true;
-            notifyIcon.ShowBalloonTip(2000);
+            notifyIcon.ShowBalloonTip(1);
             notifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(notifyIcon_MouseClick);
 
             //后期弹出一个小窗口
@@ -104,6 +171,7 @@ namespace FrostPlay
         #region
         private void Play_Click(object sender, EventArgs e)
         {
+             
             if ((string)playBtn.Content == "▶")
             {
                 play();
@@ -152,15 +220,20 @@ namespace FrostPlay
 
         private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
         {
-            this.Visibility = Visibility.Visible;
-            notifyIcon.Visible = false;
-            this.Focus();
+            if (e.Button.ToString() == "Left")
+            {
+                this.Visibility = Visibility.Visible;
+                notifyIcon.Visible = false;
+                this.Focus();
+            }
+            
         }
         #endregion
 
 
         private void MetroWindow_StateChanged(object sender, EventArgs e)
         {
+            
             WindowState ws = this.WindowState;
             if (ws == WindowState.Minimized)
             {
@@ -416,6 +489,7 @@ namespace FrostPlay
             nowPlayingMusic = null;
             audioEngine.Source = null;
             audioEngine.Dispose();
+            hotkey.UnRegist(hwnd, null);
         }
 
         private void Progress_timer_Tick(object sender, EventArgs e)
@@ -580,6 +654,7 @@ namespace FrostPlay
                     return "";
             }
         }
+
     }
 
     public class TitleComparer : IComparer<Music>
