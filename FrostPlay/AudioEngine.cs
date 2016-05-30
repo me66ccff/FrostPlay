@@ -103,8 +103,15 @@ namespace FrostPlay
 
         public void Dispose()
         {
-            soundOut.Dispose();
-            waveSource.Dispose();
+            if (soundOut != null)
+            {
+                soundOut.Dispose();
+            }
+            if (waveSource != null)
+            {
+                waveSource.Dispose();
+            }
+            
         }
     }
 }

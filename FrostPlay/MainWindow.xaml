@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FrostPlay"
         mc:Ignorable="d"
-        Title="FrostPlay" Width="800" Height="500" MinWidth="800" MinHeight="500" ResizeMode="CanResize"
+        Title="FrostPlay - - - (me66ccff分支版)" Width="800" Height="500" MinWidth="800" MinHeight="500" ResizeMode="CanResize"
         
         xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
         GlowBrush="{DynamicResource AccentColorBrush}"
@@ -15,7 +15,7 @@
         Background="{DynamicResource MaterialDesignPaper}"
         TextElement.FontSize="15"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"   
-        WindowStartupLocation="CenterScreen" Closed="MetroWindow_Closed">
+        WindowStartupLocation="CenterScreen" Closed="MetroWindow_Closed" StateChanged="MetroWindow_StateChanged">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>

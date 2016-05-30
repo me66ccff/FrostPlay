@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
+using System.Windows.Forms; // NotifyIcon control
+using System.Drawing; // Icon
 
 namespace FrostPlay
 {
@@ -32,6 +34,8 @@ namespace FrostPlay
         Uri playListFileUri { get; set; } = new Uri(new FileInfo("playlist.playlist").FullName);
         Music nowPlayingMusic { get; set; } = null;
         string displayStringFormat { get; set; } = "%num%.%artist%-%title%";
+        private NotifyIcon notifyIcon = null;
+
 
         public MainWindow()
         {
@@ -44,6 +48,123 @@ namespace FrostPlay
             readPlayList();
             readSettings();
             DataContext = this;
+        }
+
+        private void Mini2notify()
+        {
+            //隐藏主窗体
+            this.Visibility = Visibility.Hidden;
+
+            //设置托盘的各个属性
+            notifyIcon = new NotifyIcon();
+            notifyIcon.BalloonTipText = "FrosePlay托盘运行ing";
+            notifyIcon.Text = "FrosePlay";
+            notifyIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath); ;
+            notifyIcon.Visible = true;
+            notifyIcon.ShowBalloonTip(2000);
+            notifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(notifyIcon_MouseClick);
+
+            //后期弹出一个小窗口
+            #region
+            //当前音乐信息
+            MenuItem info;
+            if (artistAndTitleLabel.Content == null)
+            {
+                info = new MenuItem("正在播放:");
+            }
+            else
+            {
+                info = new MenuItem("正在播放:" + artistAndTitleLabel.Content.ToString());
+            }
+            info.Enabled = false;
+            //播放或暂停
+            MenuItem play = new MenuItem("播放/暂停");
+            play.Click += Play_Click;
+            //上一曲
+            MenuItem last = new MenuItem("上一曲(Next)");
+            last.Click += Last_Click;
+            //下一曲
+            MenuItem next = new MenuItem("下一曲(Next)");
+            next.Click += Next_Click;
+            //关于选项
+            MenuItem about = new MenuItem("关于(About)");
+            about.Click += About_Click;
+            //退出菜单项
+            MenuItem exit = new MenuItem("退出(Exit)");
+            exit.Click += Exit_Click;
+            //关联托盘控件
+            MenuItem[] childen = new MenuItem[] { info, play, last, next, about, exit };
+            notifyIcon.ContextMenu = new ContextMenu(childen);
+            #endregion
+
+        }
+
+        //托盘事件
+        #region
+        private void Play_Click(object sender, EventArgs e)
+        {
+            if ((string)playBtn.Content == "▶")
+            {
+                play();
+            }
+            else
+            {
+                pause();
+            }
+        }
+
+        private void Last_Click(object sender, EventArgs e)
+        {
+            if (playOrder != PlayOrder.random)
+            {
+                playNextSong(PlayOrder.reverseOrder);
+            }
+            else
+            {
+                playNextSong(PlayOrder.random);
+            }
+        }
+
+        private void Next_Click(object sender, EventArgs e)
+        {
+            if (playOrder != PlayOrder.loop)
+            {
+                playNextSong(playOrder);
+            }
+            else
+            {
+                playNextSong(PlayOrder.order);
+            }
+        }
+
+        private void About_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/me66ccff/FrostPlay");
+        }
+
+
+        private void Exit_Click(object sender, EventArgs e)
+        {
+            App.Current.Shutdown();
+        }
+
+
+        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            this.Visibility = Visibility.Visible;
+            notifyIcon.Visible = false;
+            this.Focus();
+        }
+        #endregion
+
+
+        private void MetroWindow_StateChanged(object sender, EventArgs e)
+        {
+            WindowState ws = this.WindowState;
+            if (ws == WindowState.Minimized)
+            {
+                Mini2notify();
+            }
         }
 
         private void playBtn_Click(object sender, RoutedEventArgs e)
@@ -66,7 +187,7 @@ namespace FrostPlay
         private void addItems_Click(object sender, RoutedEventArgs e)
         {
             int startIndex = playList.Count;
-            OpenFileDialog ofd = new OpenFileDialog();
+            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
             ofd.Multiselect = true;
             ofd.Filter = CodecFactory.SupportedFilesFilterEn;
             if (ofd.ShowDialog() == true)
