@@ -1,3 +1,5 @@
+TIP:这个是从https://github.com/EdenHell/FrostPlay 克隆的分支，加了点自己的功能
+
 # ![Alt text](overview/Icon.png "FrostPlay") FrostPlay
 
 This is a simple and beautiful music player, Use these UI toolkit development:
