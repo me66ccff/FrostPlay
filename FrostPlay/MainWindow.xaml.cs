@@ -122,6 +122,7 @@ namespace FrostPlay
         private void Mini2notify()
         {
             //隐藏主窗体
+            
             this.Visibility = Visibility.Hidden;
             //设置托盘的各个属性
             notifyIcon = new NotifyIcon();
@@ -149,7 +150,7 @@ namespace FrostPlay
             MenuItem play = new MenuItem("播放/暂停");
             play.Click += Play_Click;
             //上一曲
-            MenuItem last = new MenuItem("上一曲(Next)");
+            MenuItem last = new MenuItem("上一曲(Last)");
             last.Click += Last_Click;
             //下一曲
             MenuItem next = new MenuItem("下一曲(Next)");
@@ -224,7 +225,10 @@ namespace FrostPlay
             {
                 this.Visibility = Visibility.Visible;
                 notifyIcon.Visible = false;
-                this.Focus();
+                //this.ShowDialog();
+                //this.WindowState = WindowState.Normal;
+                //this.Height = this.Height;
+                //this.Width = this.Width;
             }
             
         }
