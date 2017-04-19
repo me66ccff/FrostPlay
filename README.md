@@ -32,8 +32,8 @@ and a Library for reading and writing metadata in media files:
 
 ### Screenshot
 
-![](overview/Screenshot 1.png)
+![Screenshot](overview/Screenshot 1.png)
 
-![](overview/Screenshot 2.png)
+![Screenshot](overview/Screenshot 2.png)
 
 
