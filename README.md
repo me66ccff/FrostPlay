@@ -36,6 +36,6 @@ and a Library for reading and writing metadata in media files:
 ![老版本地形][Screenshot1]
 ![老版本地形][Screenshot2]
 
-[Screenshot1]:/Screenshot1.png "Screenshot1"
-[Screenshot2]:/Screenshot2.png "Screenshot1"
+[Screenshot1]: overview/Screenshot1.png "Screenshot1"
+[Screenshot2]: overview/Screenshot2.png "Screenshot1"
 
